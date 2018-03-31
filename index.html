@@ -1,0 +1,73 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Solving a Puzzle with QLearning</title>
+	<style type="text/css" media="screen">
+		#inputs {
+			margin: 0px;
+		    height: 200px;
+		    width: 80%;
+		}
+	</style>
+</head>
+<body>
+	<h1>Solving A Puzzle with QLearning Demo</h1>
+	<p>Say your a car and want to get ice cream, and also you want to avoid zombies. Which action would be best to take?</p>
+	<img src="https://cdn-images-1.medium.com/max/800/1*XcK3kbDW4mCMZ802-A54rg.png" />
+	<div>
+	<h2>1.) Converting Visualization into scenarios</h2>
+	<p> Syntax: state action reward next-state</p>
+<textarea id="inputs">
+x2-y1 down 0 x2-y2
+x2-y1 left 100 x1-y1
+x1-y1 right 0 x2-y1
+x2-y1 down 0 x2-y2
+x2-y2 left -100 x1-y2
+x2-y2 left -100 x1-y2
+x1-y2 up 100 x1-y1
+x2-y2 up 0 x2-y1
+x1-y2 up 100 x1-y1
+x2-y2 left -100 x1-y2
+x1-y2 right 0 x2-y2
+x2-y2 up 0 x2-y1
+x1-y2 up 100 x1-y1
+</textarea>
+<br>
+<button id="policy-button">compute policy</button>
+<p>Results: (Note: Press compute policy button multiple times until it gets the optimal policy)</p>
+<div id="results">
+</div>
+<p>Per Action:</p>
+<input id="inputs2" value="x2-y2"/>
+<div id="results2">
+</div>
+<input id="inputs3" value="x2-y1"/>
+<div id="results3">
+</div>
+<input id="inputs4" value="x1-y1"/>
+<div id="results4">
+</div>
+</body>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="./assets/script.js"></script>
+<script>
+	var normalAgent = new QLearn;
+	$(document).on('click', '#policy-button', function(){
+		var inputs = $('#inputs').text().trim().split("\n");
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			normalAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		$('#results').text(JSON.stringify(normalAgent.getTransitionMatrix()));
+
+		$('#results2').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs2').val().trim())));
+		$('#results3').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs3').val().trim())));
+		$('#results4').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs4').val().trim())));
+	});
+</script>
+</html>
