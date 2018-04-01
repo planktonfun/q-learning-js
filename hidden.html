@@ -1,0 +1,123 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Solving a Puzzle with QLearning</title>
+	<style type="text/css" media="screen">
+		#inputs {
+			margin: 0px;
+		    height: 200px;
+		    width: 80%;
+		}
+	</style>
+</head>
+<body>
+	<h1>Solving tower of hanoi puzzle with QLearning Demo</h1>
+	<p>There are many ways to solve tower of hanoi, but is there a way to find the minimum number of optimal steps? Which action would be best to take?</p>
+	<img src="./assets/hidden.gif" />
+	<div>
+	<h2>1.) Mapping Agent coordinates/situation into states</h2>
+    <p> In this case there may too many states to cover, so we will just be adding states randomly or states that are important:</p>
+    <p> The states are already in the picture filtered out unecessary states</p>
+	<h2>2.) Adding random scenarios as inputs (even if its incomplete that's ok, as long as we achieve a goal)</h2>
+	<p> Syntax: state action reward next-state</p>
+<textarea id="inputs">
+1 left 0 2
+1 left 0 3
+2 down 0 6
+2 right 0 3
+3 left 0 2
+3 right 0 4
+4 left 0 3
+4 right 0 5
+4 down 0 8
+5 left 0 4
+5 down 0 9
+6 up 0 2
+6 down 0 10
+6 right 0 7
+7 left 0 6
+7 right 0 8
+7 down 0 10
+8 left 0 7
+8 right 0 5
+8 up 0 4
+9 up 0 5
+9 down 0 12
+9 left 0 11
+10 up 0 6
+10 down 0 13
+10 right 0 7
+13 up 0 10
+13 down 0 19
+19 down 0 25
+25 up 0 19
+25 right 0 26
+27 left 0 25
+27 right 0 26
+26 left 0 25
+25 down 100 27
+</textarea>
+<br>
+<button id="policy-button">compute policy</button>
+<p>Results: (Note: Press compute policy button multiple times until it gets the optimal policy)</p>
+<div id="results">
+</div>
+<p>Per Action:</p>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="1"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="2"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="6"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="10"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="13"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="19"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="25"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="27"/>
+	<div class="input-tabs-result"></div>
+</div>
+</body>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="./assets/script.js"></script>
+<script>
+	var normalAgent = new QLearn;
+	$(document).on('click', '#policy-button', function(){
+		var inputs = $('#inputs').val().trim().split("\n");
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			normalAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		$('#results').text(JSON.stringify(normalAgent.getTransitionMatrix()));
+
+		$('.input-tabs').each(function() {
+			var value = $(this).find('.input-tabs-input').val().trim();
+			console.log(value);
+			$(this).find('.input-tabs-result').text(JSON.stringify(normalAgent.getBestPolicy(value)));
+		});
+	});
+</script>
+</html>
