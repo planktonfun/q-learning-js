@@ -16,6 +16,7 @@
 	<img src="https://cdn-images-1.medium.com/max/800/1*XcK3kbDW4mCMZ802-A54rg.png" />
 	<div>
 	<h2>1.) Mapping Agent(car) coordinates/situation into states</h2>
+	<img src="./assets/state1.png" />
 <pre>
 x2-y2 is state 1
 x2-y1 is state 2
@@ -65,7 +66,7 @@ x1-y1 is state 4
 <script>
 	var normalAgent = new QLearn;
 	$(document).on('click', '#policy-button', function(){
-		var inputs = $('#inputs').text().trim().split("\n");
+		var inputs = $('#inputs').val().trim().split("\n");
 		$.each(inputs, function(key, value){
 			var params = value.split(' ');
 

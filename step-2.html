@@ -11,33 +11,30 @@
 	</style>
 </head>
 <body>
-	<h1>Solving a more complicated puzzle with QLearning Demo</h1>
+	<h1>Solving a more complicated(not really) puzzle with QLearning Demo</h1>
 	<p>Say your a car and want to get ice cream, and also you want to avoid zombies. Which action would be best to take?</p>
 	<img src="https://cdn-images-1.medium.com/max/800/1*X4C_DmhdnkKd6b745GzKHw.png" />
 	<div>
 	<h2>1.) Mapping Agent(car) coordinates/situation into states</h2>
-<pre>
-x2-y2 is state 1
-x2-y1 is state 2
-x1-y2 is state 3
-x1-y1 is state 4
-</pre>
-	<h2>2.) Adding random scenarios as inputs</h2>
+<p> In this case there may too many states to cover, so we will just be adding states randomly or states that are important:</p>
+<p> State that gets icecream</p>
+<p> State that dies in zombies</p>
+<img src="./assets/state2.png" />
+	<h2>2.) Adding random scenarios as inputs (even if its incomplete that's ok, as long as we achieve a goal)</h2>
 	<p> Syntax: state action reward next-state</p>
 <textarea id="inputs">
-2 down 0 1
-2 left 100 4
-4 right 0 2
-2 down 0 1
-1 left -100 3
-1 left -100 3
-3 up 100 4
 1 up 0 2
-3 up 100 4
-1 left -100 3
-3 right 0 1
-1 up 0 2
-3 up 100 4
+1 right 0 11
+1 left 0 0
+2 up -100 3
+6 left -100 7
+2 left 0 6
+6 up 0 4
+4 left 0 8
+8 up 100 5
+4 up 0 9
+9 left 100 5
+8 down -100 7
 </textarea>
 <br>
 <button id="policy-button">compute policy</button>
@@ -54,6 +51,14 @@ x1-y1 is state 4
 <input id="inputs4" value="4"/>
 <div id="results4">
 </div>
+<input id="inputs5" value="8"/>
+<div id="results5">
+</div>
+
+<p>Now we know that our algorithm has limitations, its not a minimax algorithm where you get all the possible outcome,
+	and doesn't quite fit in infinite states, we have to abstract our data to a finite state
+(we use our imaginations unfortunately..)</p>
+<a href="./step-3.html"> More sophisticated solution for a simple game</a>
 </body>
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -63,7 +68,7 @@ x1-y1 is state 4
 <script>
 	var normalAgent = new QLearn;
 	$(document).on('click', '#policy-button', function(){
-		var inputs = $('#inputs').text().trim().split("\n");
+		var inputs = $('#inputs').val().trim().split("\n");
 		$.each(inputs, function(key, value){
 			var params = value.split(' ');
 
@@ -75,6 +80,7 @@ x1-y1 is state 4
 		$('#results2').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs2').val().trim())));
 		$('#results3').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs3').val().trim())));
 		$('#results4').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs4').val().trim())));
+		$('#results5').text(JSON.stringify(normalAgent.getBestPolicy($('#inputs5').val().trim())));
 	});
 </script>
 </html>
