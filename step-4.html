@@ -3,7 +3,7 @@
 	<meta charset="utf-8">
 	<title>Solving a Puzzle with QLearning</title>
 	<style type="text/css" media="screen">
-		#inputs {
+		#inputs, #inputs2 {
 			margin: 0px;
 		    height: 200px;
 		    width: 80%;
@@ -11,6 +11,224 @@
 	</style>
 </head>
 <body>
-	<h1>In progress... (Time limited)</h1>
+	<h1>Another experimental solution for the last puzzle with QLearning Demo</h1>
+	<p>Say your a car and want to get ice cream, and also you want to avoid zombies. Which action would be best to take?</p>
+	<img src="https://cdn-images-1.medium.com/max/800/1*X4C_DmhdnkKd6b745GzKHw.png" />
+	<div>
+	<h2>1.) Mapping Agent(car) coordinates/situation into states</h2>
+<p> Note this is experimental: we will create two transition matrix for X and Y coordinates, X are the grey numbers and Y are the black numbers, we will combine transition matrix by adding their scores and choosing the highest one.</p>
+<p> State that gets icecream</p>
+<p> State that dies in zombies</p>
+<img src="./assets/state4.png" />
+	<h2>2.) Adding random scenarios as inputs</h2>
+	<p> Syntax: state action reward next-state</p>
+
+	<p> X axis scenarios</p>
+<textarea id="inputs">
+2 up 0 2
+2 up 0 2
+2 up 0 2
+2 up 0 2
+2 up 0 2
+2 up 0 2
+2 up 0 2
+2 left 0 3
+2 left -100 3
+2 up 0 2
+2 right -100 1
+2 left 0 3
+3 up -100 3
+3 left 0 4
+4 down -100 4
+4 up 0 4
+3 left 100 4
+4 right 100 3
+4 up 100 4
+4 left 0 3
+4 down 0 4
+3 up 0 3
+</textarea>
+
+	<p> Y axis scenarios</p>
+<textarea id="inputs2">
+1 up 0 2
+1 up 0 2
+1 up 0 2
+1 up 0 2
+1 up 0 2
+1 up 0 2
+1 up 0 2
+1 left 0 1
+2 left -100 2
+2 up 0 3
+3 right -100 3
+3 left 0 3
+3 up -100 4
+3 left 0 3
+4 down -100 3
+4 up 0 5
+2 left 100 2
+2 right 100 2
+3 up 100 4
+2 left 0 2
+3 down 0 2
+4 up 0 3
+</textarea>
+
+<br>
+<button id="policy-button">compute policy</button>
+<p>Results: (Note: Press compute policy button multiple times until it gets the optimal policy)</p>
+<p>X Transition matrix:</p>
+<div id="results">
+</div>
+<p>Y Transition matrix:</p>
+<div id="results2">
+</div>
+
+<p>X+Y Transition matrix:</p>
+<div id="results3">
+</div>
+
+<p>Per Action: syntax(x y)</p>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="2 1"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="2 2"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="3 2"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="3 3"/>
+	<div class="input-tabs-result"></div>
+</div>
+<div class="input-tabs">
+	<input class="input-tabs-input" value="4 3"/>
+	<div class="input-tabs-result"></div>
+</div>
+
+<p>As we observed our agent seems to do bad in some area and good at other areas using combine reduced q learning states (it likes left a lot since the reward recorded was going to the left), but its still unknown if this method would cause something unexpected later on (its like hashing a file but expect a looseless full output), this can be used optionally if we have too much states, now we know that this approach still needs work.
+ next we will apply qlearning in a famous game flappy bird.</p>
+<a href="./step-5.html"> Lets use q-learning for flappy bird game</a>
 </body>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="./assets/script.js"></script>
+<script>
+
+	var QLearnForest = function(AgentA, AgentB) {
+	    this.AgentA = AgentA;
+	    this.AgentB = AgentB;
+
+	    this.addObjects = function(ObjA, ObjB) {
+	        var added = {};
+
+	        for(var key in ObjA) {
+	            if(added[key] == undefined) {
+	                added[key] = ObjA[key];
+	            } else {
+	                added[key] = added[key] + ObjA[key];
+	            }
+	        }
+
+	        for(var key in ObjB) {
+	            if(added[key] == undefined) {
+	                added[key] = ObjB[key];
+	            } else {
+	                added[key] = added[key] + ObjB[key];
+	            }
+	        }
+
+	        return added;
+	    }
+
+	    this.mergeAgents = function() {
+	        var mergedStates = {};
+
+	        for(var stateA in this.AgentA.transitionMatrix) {
+	            for(var stateB in this.AgentB.transitionMatrix) {
+	                var key = stateA + ' ' + stateB;
+	                if(mergedStates[key] == undefined) {
+	                    var transitionMatrixA = this.AgentA.transitionMatrix[stateA];
+	                    var transitionMatrixB = this.AgentB.transitionMatrix[stateB];
+	                    mergedStates[key] = this.addObjects(
+	                        transitionMatrixA,
+	                        transitionMatrixB
+	                    );
+	                }
+	            }
+	        }
+
+	        return mergedStates;
+	    }
+
+	    this.getBestPolicy = function(state) {
+	        var actionPool = this.transitionMatrix[state];
+	        var action = 'undefined';
+	        var maxScore = -99999999;
+
+	        for(var key in actionPool) {
+	            var score = actionPool[key];
+
+	            if(score >= maxScore) {
+
+	                if(score == maxScore) {
+	                    action = action + ' or ' + key + ':' + score;
+	                } else {
+	                    maxScore = score;
+	                    action = key + ':' + score;
+	                }
+	            }
+	        }
+
+	        return action;
+	    }
+
+	    this.getTransitionMatrix = function() {
+	        return this.transitionMatrix;
+	    }
+
+	    this.transitionMatrix = this.mergeAgents();
+	}
+
+	var xAgent = new QLearn;
+	var yAgent = new QLearn;
+	
+	$(document).on('click', '#policy-button', function(){
+		var inputs = $('#inputs').val().trim().split("\n");
+
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			xAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		var inputs = $('#inputs2').val().trim().split("\n");
+
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			yAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		$('#results').text(JSON.stringify(xAgent.getTransitionMatrix()));
+		$('#results2').text(JSON.stringify(yAgent.getTransitionMatrix()));
+
+		var combinedAgent = new QLearnForest(xAgent, yAgent);
+
+		$('#results3').text(JSON.stringify(combinedAgent.getTransitionMatrix()));
+
+		$('.input-tabs').each(function() {
+			var value = $(this).find('.input-tabs-input').val().trim();
+			console.log(value);
+			$(this).find('.input-tabs-result').text(JSON.stringify(combinedAgent.getBestPolicy(value)));
+		});
+	});
+</script>
 </html>
