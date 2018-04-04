@@ -3,7 +3,7 @@
 	<meta charset="utf-8">
 	<title>Solving a Puzzle with QLearning</title>
 	<style type="text/css" media="screen">
-		#inputs {
+		#inputs, #inputs2 {
 			margin: 0px;
 		    height: 200px;
 		    width: 80%;
@@ -11,6 +11,140 @@
 	</style>
 </head>
 <body>
-	<h1>In progress... (Time limited)</h1>
+	<h1>Another experimental solution is solving a 4x4 cube QLearning Demo</h1>
+	<p>As the other examples we visualize a state</p>
+	<div>
+	<h2>1.) Mapping Agent(cube) position into states</h2>
+	<pre>WWWWWWWWWWWWOOOOOOOYOOOYOOOYOOOYGGGGGGGGGGGGGGGGWRRRWRRRWRRRWRRRBBBBBBBBBBBBBBBBRRRRYYYYYYYYYYYY frontCounterClockwise(2) 100 WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRBBBBBBBBBBBBBBBBYYYYYYYYYYYYYYYY 
+WWWWWWWWWWWWRRRROOOWOOOWOOOWOOOWGGGGGGGGGGGGGGGGYRRRYRRRYRRRYRRRBBBBBBBBBBBBBBBBOOOOYYYYYYYYYYYY frontClockwise(1) 100 WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRBBBBBBBBBBBBBBBBYYYYYYYYYYYYYYYY 
+RRRRWWWWWWWWWWWWWOOOWOOOWOOOWOOOGGGGGGGGGGGGGGGGRRRYRRRYRRRYRRRYBBBBBBBBBBBBBBBBYYYYYYYYYYYYOOOO backCounterClockwise(4) 100 WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRBBBBBBBBBBBBBBBBYYYYYYYYYYYYYYYY 
+OOOOWWWWWWWWWWWWYOOOYOOOYOOOYOOOGGGGGGGGGGGGGGGGRRRWRRRWRRRWRRRWBBBBBBBBBBBBBBBBYYYYYYYYYYYYRRRR backClockwise(3) 100 WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRBBBBBBBBBBBBBBBBYYYYYYYYYYYYYYYY 
+WGWWWGWWWGWWWGWWOOOOOOOOOOOOOOOOGYGGGYGGGYGGGYGGRRRRRRRRRRRRRRRRBBWBBBWBBBWBBBWBYBYYYBYYYBYYYBYY innerLeftDown(6) 100 WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOGGGGGGGGGGGGGGGGRRRRRRRRRRRRRRRRBBBBBBBBBBBBBBBBYYYYYYYYYYYYYYYY </pre>
+	<h2>2.) Adding random scenarios as inputs (I can't fit the file in here its too big, that's why finding a clever way to summarize states is really important)</h2>
+	<p> Syntax: state action reward next-state</p>
+	<img src="./assets/state5-2.png" />
+<br>
+<p>Results (virtually it can solve the problem, you just need a huge amount of storage):</p>
+<img src="./assets/state5-1.png" />
+
+<p>As we observed our agent can solve problems but depends with the data given.
+ next we will apply qlearning in a famous game flappy bird.</p>
+<a href="./step-6.html"> Lets use q-learning for flappy bird game</a>
 </body>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script src="./assets/script.js"></script>
+<script>
+
+	var QLearnForest = function(AgentA, AgentB) {
+	    this.AgentA = AgentA;
+	    this.AgentB = AgentB;
+
+	    this.addObjects = function(ObjA, ObjB) {
+	        var added = {};
+
+	        for(var key in ObjA) {
+	            if(added[key] == undefined) {
+	                added[key] = ObjA[key];
+	            } else {
+	                added[key] = added[key] + ObjA[key];
+	            }
+	        }
+
+	        for(var key in ObjB) {
+	            if(added[key] == undefined) {
+	                added[key] = ObjB[key];
+	            } else {
+	                added[key] = added[key] + ObjB[key];
+	            }
+	        }
+
+	        return added;
+	    }
+
+	    this.mergeAgents = function() {
+	        var mergedStates = {};
+
+	        for(var stateA in this.AgentA.transitionMatrix) {
+	            for(var stateB in this.AgentB.transitionMatrix) {
+	                var key = stateA + ' ' + stateB;
+	                if(mergedStates[key] == undefined) {
+	                    var transitionMatrixA = this.AgentA.transitionMatrix[stateA];
+	                    var transitionMatrixB = this.AgentB.transitionMatrix[stateB];
+	                    mergedStates[key] = this.addObjects(
+	                        transitionMatrixA,
+	                        transitionMatrixB
+	                    );
+	                }
+	            }
+	        }
+
+	        return mergedStates;
+	    }
+
+	    this.getBestPolicy = function(state) {
+	        var actionPool = this.transitionMatrix[state];
+	        var action = 'undefined';
+	        var maxScore = -99999999;
+
+	        for(var key in actionPool) {
+	            var score = actionPool[key];
+
+	            if(score >= maxScore) {
+
+	                if(score == maxScore) {
+	                    action = action + ' or ' + key + ':' + score;
+	                } else {
+	                    maxScore = score;
+	                    action = key + ':' + score;
+	                }
+	            }
+	        }
+
+	        return action;
+	    }
+
+	    this.getTransitionMatrix = function() {
+	        return this.transitionMatrix;
+	    }
+
+	    this.transitionMatrix = this.mergeAgents();
+	}
+
+	var xAgent = new QLearn;
+	var yAgent = new QLearn;
+	
+	$(document).on('click', '#policy-button', function(){
+		var inputs = $('#inputs').val().trim().split("\n");
+
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			xAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		var inputs = $('#inputs2').val().trim().split("\n");
+
+		$.each(inputs, function(key, value){
+			var params = value.split(' ');
+
+			yAgent.addState(params[0], params[1], params[2]*1, params[3]);
+		});
+
+		$('#results').text(JSON.stringify(xAgent.getTransitionMatrix()));
+		$('#results2').text(JSON.stringify(yAgent.getTransitionMatrix()));
+
+		var combinedAgent = new QLearnForest(xAgent, yAgent);
+
+		$('#results3').text(JSON.stringify(combinedAgent.getTransitionMatrix()));
+
+		$('.input-tabs').each(function() {
+			var value = $(this).find('.input-tabs-input').val().trim();
+			console.log(value);
+			$(this).find('.input-tabs-result').text(JSON.stringify(combinedAgent.getBestPolicy(value)));
+		});
+	});
+</script>
 </html>
