@@ -1,7 +1,9 @@
-<html>
+<!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
 	<title>Solving a Puzzle with QLearning</title>
+	<link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+	<link href='./assets/base.css' rel='stylesheet' type='text/css'>
 	<style type="text/css" media="screen">
 		#inputs {
 			margin: 0px;
@@ -11,6 +13,29 @@
 	</style>
 </head>
 <body>
-	<h1>In progress... (Time limited)</h1>
+	<h1>Survive Flappybird with QLearning Demo</h1>
+	<p>Say your a bird and want to avoid pipes to get high scores. Which action would be best to take(to flap or not to flap)?</p>
+	<div>
+	<h2>1.) Mapping Agent(bird) position into states</h2>
+	<p> Again, there may too many states to cover, so we will do is get the difference of height percentage of the bird and the two pipes:</p>
+	<h2>2.) Adding states scenarios as inputs (even if its incomplete that's ok, as long as we achieve a goal)</h2>
+	<p> Syntax: state action reward next-state</p>
+	<textarea id="inputs"></textarea>
+	<button onclick="UseTransitionMatrixToCompute()">Compute Policy</button> 
+	<p>Results: (Note: Press Speeds to see how far it will go)</p>
+	<canvas id="flappy" width="500" height="512"></canvas> <br/>
+	<div id="data" width="500" height="512"></div> <br/>
+	<div class="tree" id="displayTree"></div> <br/>
+	<button onclick="speed(60)">x1</button>
+	<button onclick="speed(120)">x2</button>
+	<button onclick="speed(180)">x3</button>
+	<button onclick="speed(300)">x5</button>
+	<button onclick="speed(0)">MAX</button>
+	<p>Conclusion: Now we know that our algorithm can run surviving flappy bird, given that we provide the right data, still the data although reduced it still take up 22243 bytes or more that 34,000 rows of data to produce our simple result.</p>
+	<p>Congratulations! you have reached the end of this demo.</p>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<script src = "./assets/game-q.js"></script>
 </body>
 </html>
