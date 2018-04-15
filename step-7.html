@@ -16296,9 +16296,11 @@ xx.xoooxo o-2 100 xxoxoooxo
 		}
 
 		$(document).on('click', '.board img', function() {
-			if($(this).attr('src') == './assets/blank.png') {
-				$(this).attr('src', './assets/x.png');
+			if($(this).attr('src') != './assets/blank.png') {
+				return;
 			}
+
+			$(this).attr('src', './assets/x.png');
 
 			var tto = [];
 			var joined = '';
