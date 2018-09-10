@@ -21,8 +21,9 @@
 	</style>
 </head>
 <body>
-	<h1>Solving TicTacToe with QLearning Demo</h1>
+	<h1>Solving TicTacToe with QLearning Demo (with stocastic approximation)</h1>
 	<p>This is a simple game that are easy to learn by humans but for experimental reason we want to solve it using qlearn, what would be the optimal moves given that there are 2 players</p>
+	<p>The only difference with this and the last one is it can converge much quicker but will make the AI a bit dumber.</p>
 	<div>
 	<h2>1.) Mapping O and X states</h2>
 	<p> Again, there may too many states to cover, so we will do is get the difference of height percentage of the bird and the two pipes:</p>
@@ -70,11 +71,10 @@
 	<p>Click on the panels to start</p>
 	<button id="reset">reset board</button>
 	<p>Conclusion: Now we know that our algorithm can create a tough AI that's impossible to beat, although training for a simple game requires a lot of states.</p>
-	<a href="./step-8.html">Applying a shortcut algorithm using approximation for tictactoe</a>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
-	<script src="./assets/scriptttt.js"></script>
+	<script src="./assets/scripttttt.js"></script>
 	<script src="./assets/o-actions.js"></script>
 	<script>
 		var normalAgent = new QLearn;
